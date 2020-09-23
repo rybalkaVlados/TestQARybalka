@@ -1,0 +1,178 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import random
+import time
+from selenium.webdriver.support.select import Select
+from selenium.common.exceptions import TimeoutException
+import os
+
+class PythonOrgSearch(unittest.TestCase):
+
+
+    def setUp(self):
+        PUTH = r"C:\Program Files (x86)\WebTest\app\chromedriver.exe"
+        self.driver = webdriver.Chrome(PUTH)
+
+    def test_1(self):
+        driver = self.driver
+        driver.get("https://stage.entiredigital.net/")
+        driver.maximize_window()
+        wait = WebDriverWait(driver, 10)
+        driver.find_element_by_id("email").send_keys("admin@entiredigital.com")
+        driver.find_element_by_id("password").send_keys("admin")
+        driver.find_element_by_xpath("//*[@class='float-right']/button").click()
+        assert "EDP - Summary" in driver.title
+        
+
+
+        self.left_side_bar = driver.find_elements_by_xpath("//*[@class='app-sidebar__inner']/ul/li")
+        left_side_bar = self.left_side_bar
+        
+        for choice in left_side_bar:
+            print (choice.text)
+        driver.find_element_by_link_text("Articles").click()
+        self.element = wait.until(
+            EC.presence_of_element_located((By.XPATH, "//*[@class='mm-collapse mm-show']/li/a" ))
+            )
+        self.element.click()    
+        self.create_article = driver.find_element_by_xpath("//*[@class='d-inline-block dropdown']/button")
+        self.create_article.click()
+        self.EasteriBlaog_TEST = wait.until(
+        EC.presence_of_element_located((By.XPATH, "//*[@class='dropdown-menu dropdown-menu-right show']/ul/li/a"))
+            )
+        self.EasteriBlaog_TEST.click()
+        per_00 = ["Test QA 01", "Test QA 02", "Test QA 03", "Test QA 04", "Test QA 05", "Test QA 06", "Test QA 07", "Test QA 08", "Test QA 09"]
+        
+        random.shuffle(per_00)
+
+        self.random_choice = random.choice(per_00)
+    
+        self.title = driver.find_element_by_id("Title")
+        self.title.send_keys(self.random_choice)
+
+        self.drop_list = Select(driver.find_element_by_xpath("//*[@class='form-group']/select"))
+        self.rand_drop = random.randint(0,5)
+        self.drop_list.select_by_index(self.rand_drop)
+
+        self.date = driver.find_element_by_id("DueAt")
+        self.date.clear()
+        self.date.send_keys("10/10/2021") 
+
+        # self.rate = Select(driver.find_element_by_id("RateTablesId"))
+        # self.rand_rate = random.randint(0, 1)
+        # self.rate.select_by_index(self.rand_rate)
+
+        # self.all_elems = driver.find_elements_by_class_name("row")
+        # for elems in self.all_elems:
+        #     print(elems.text)
+
+        self.Save_And_Assign_to_me = driver.find_element_by_id("btnAssignToMe")
+        self.Save_And_Assign_to_me.click()
+
+        self.title_random = driver.find_element_by_xpath("//*[@class='row']/div/h5").text
+        assert self.title_random == self.random_choice
+
+        self.titleH1 = driver.find_element_by_id("title")
+        self.titleH1.send_keys("Test automatization QA") 
+
+        self.HomePageTitle = driver.find_element_by_id("HomepageTitle")
+        self.HomePageTitle.send_keys("Test automatization QA")
+
+        self.AlternativeTitle = driver.find_element_by_id("AltTitle")
+        self.AlternativeTitle.send_keys("Test automatization QA")
+
+        self.SubtitleH2 = driver.find_element_by_id("Summary")
+        self.SubtitleH2.send_keys("Test automatization QA")
+
+        
+        driver.switch_to.frame(driver.find_element_by_tag_name("iframe"))   #iframe start
+        
+        self.Content = driver.find_element_by_xpath('//*[@id="tinymce"]')
+        self.Content.send_keys("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." * 19 )
+
+        driver.switch_to.default_content()         #iframe finish
+
+        self.MetaTitle = driver.find_element_by_id("SeoTitle")
+        self.MetaTitle.send_keys("Test automatization QA")
+
+        self.MetaDescription = driver.find_element_by_id("SeoMetaDesc")
+        self.MetaDescription.send_keys("Test automatization QA")
+
+        self.Slug = driver.find_element_by_id("SeoSlug")
+        self.Slug.clear()
+        self.Slug.send_keys("Test automatization QA")
+
+        self.FocusKeyPhrase = driver.find_element_by_id("SeoFocusKeyPhrase")
+        self.FocusKeyPhrase.send_keys("Test automatization QA")
+
+        self.Tags = driver.find_element_by_id("Tag")
+        self.Tags.send_keys("accadde-oggi")
+        self.Tags.send_keys(Keys.ENTER)
+        
+        self.SaveTag = driver.find_element_by_id("btnAddTag")
+        self.SaveTag.click()
+
+        self.TagWasAddedMessage = wait.until(EC.presence_of_element_located((By.ID, "swal2-content"))).text
+        assert "Tag was added!" == self.TagWasAddedMessage
+        
+
+        self.OKMessage = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@class='swal2-popup swal2-modal swal2-show']/div[3]/button")))
+        self.OKMessage.click()
+
+        self.Tags.send_keys("tecnologia")
+        self.Tags.send_keys(Keys.ENTER)
+        self.SaveTag.click()
+
+        assert "Tag was added!" == self.TagWasAddedMessage
+        self.OKMessageTwo = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@class='swal2-popup swal2-modal swal2-show']/div[3]/button")))
+        self.OKMessageTwo.click()
+
+        self.TitleImage = driver.find_element_by_id("TitleImg")
+        self.TitleImage.send_keys("Test automatization QA")
+
+        self.AlternativeText = driver.find_element_by_id("AltTextImg")
+        self.AlternativeText.send_keys("Test automatization QA")
+
+        self.SourceNames = Select(driver.find_element_by_id("SourceNameImg"))
+        self.RandomSourceName = random.randint(0, 29)
+        self.SourceNames.select_by_index(self.RandomSourceName)
+
+        self.SourceURL = driver.find_element_by_id("SourceUrlImg")
+        self.SourceURL.send_keys("data:image/jpeg;")
+
+        self.ADDImage = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='form_main_img']/div[5]/div/input"))).click()
+        
+        # self.ADDImage.send_keys("/app/Recun.jpg")
+        
+        self.ADDImage.send_keys("83534" + Keys.DOWN + Keys.ENTER)
+        # self.ADDImage.send_keys(Keys.Down)
+        # self.ADDImage.send_keys(Keys.ENTER)
+
+        time.sleep(10)
+
+
+
+       
+
+
+
+
+
+
+        
+    
+    
+        driver.quit()
+        
+
+
+
+
+
+if __name__ == "__main__":
+    unittest.main()
